@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  </head>
+  <body>
+
+    <% require 'pg' %>
+    <% connection = PG::connect(dbname: "goya") %>
+    <% connection.internal_encoding = "UTF-8" %>
+
+    <% result = connection.exec("select * from crops where not give_for = '自家消費' ;") %>
+    <% data1 = [] %>
+    <% result.each do |record| %>
+      <%  data1 << "長さ：#{record["length"]} 重さ：#{record["weight"]} 品質：#{record["quality"]} 譲渡先：#{record["give_for"]} 日付：#{record["date"]}" %>
+    <% end %>
+
+    <% result = connection.exec("select * from crops where quality = false;") %>
+    <% data2 = [] %>
+    <% result.each do |record| %>
+      <%  data2 << "長さ：#{record["length"]} 重さ：#{record["weight"]} 品質：#{record["quality"]} 譲渡先：#{record["give_for"]} 日付：#{record["date"]}" %>
+    <% end %>
+
+    <form action="ruby_exam1.cgi" method="POST">
+       下記のボタンを押すと、譲渡先が自家消費ではないもののgoyaの情報ページに飛びます<br><br>
+       <!-- valueには、送りたいデータを代入する -->
+       <!-- name="goya"を、情報の目印とする -->
+      <input type="text" name="goya1" value="<%= data1.join(' ') %>">
+      <input type="submit" name="送信" >
+    </form>
+
+    <form action="ruby_exam2.cgi" method="POST">
+       下記のボタンを押すと、品質が悪いもの（false）のgoyaの情報を載せたページに飛びます<br><br>
+       <!-- valueには、送りたいデータを代入する -->
+       <!-- name="goya"を、情報の目印とする -->
+      <input type="text" name="goya2" value="<%= data2.join(' ') %>">
+      <input type="submit" name="送信" >
+    </form>
+
+  </body>
+</html>
